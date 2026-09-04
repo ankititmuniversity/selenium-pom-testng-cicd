@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -17,27 +16,25 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Running Selenium + TestNG tests..."
-                sh 'mvn clean test'
+                sh 'mvn clean test -Dheadless=true'
             }
         }
 
-        stage('Generate Allure Report') {
+        stage('Allure Report') {
             steps {
-                echo "Generating Allure Report..."
                 allure includeProperties: false,
                        jdk: '',
                        results: [[path: 'target/allure-results']]
             }
         }
 
-        stage('Publish Extent Report') {
+        stage('Extent Report') {
             steps {
-                echo "Publishing Extent Report..."
                 publishHTML([
                     allowMissing: true,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
-                    reportDir: 'reports/ExtentReport',          // Change if your path is different
+                    reportDir: 'reports/ExtentReport',
                     reportFiles: 'ExtentReport.html',
                     reportName: 'Extent Report'
                 ])
@@ -47,27 +44,23 @@ pipeline {
 
     post {
         always {
-            echo "Archiving reports and screenshots..."
-
-            // Archive both reports + screenshots
             archiveArtifacts artifacts: '''
                 reports/ExtentReport/**,
                 target/allure-results/**,
-                target/allure-report/**,
+                target/surefire-reports/**,
                 test-output/**,
                 logs/**
             ''', allowEmptyArchive: true
 
-            // Optional: Clean workspace
-             cleanWs()
+            cleanWs()
         }
 
         success {
-            echo "Pipeline succeeded!"
+            echo "Pipeline Succeeded!"
         }
 
         failure {
-            echo "Pipeline failed! Check Extent & Allure reports."
+            echo "Pipeline Failed! Check the reports."
         }
     }
 }
