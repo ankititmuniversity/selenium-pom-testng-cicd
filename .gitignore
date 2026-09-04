@@ -2,3 +2,8 @@
 /logs/
 .idea/
 *.iml
+/logs/
+/screenshots/
+/test-output/
+/allure-results/
+/.settings/
