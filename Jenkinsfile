@@ -16,7 +16,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Running Selenium + TestNG tests..."
-                sh 'mvn clean test -Dheadless=true'
+                bat 'mvn clean test -Dheadless=true'
             }
         }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 allure includeProperties: false,
                        jdk: '',
-                       results: [[path: 'target/allure-results']]
+                       results: [[path: 'allure-results/']]
             }
         }
 
